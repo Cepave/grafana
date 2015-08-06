@@ -2,7 +2,7 @@ module.exports = function(config) {
   return {
     source: {
       files: {
-        src: ['Gruntfile.js', '<%= srcDir %>/app/**/*.js', '!<%= srcDir %>/app/directives/metric.segment.js'],
+        src: ['Gruntfile.js', '<%= srcDir %>/app/**/*.js'],
       }
     },
     tests: {
