@@ -142,9 +142,6 @@ function (angular, app, _) {
           option.selected = true;
         }
 
-        console.log('option =', option);
-        console.log('vm.variable =', vm.variable);
-        console.log('vm =', vm);
         if (option.text === 'All' || excludeOthers) {
           setAllExceptCurrentTo(false);
           commitChange = true;

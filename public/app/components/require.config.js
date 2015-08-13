@@ -41,6 +41,13 @@ require.config({
     'jquery.flot.crosshair':   '../vendor/flot/jquery.flot.crosshair',
     'jquery.flot.fillbelow':   '../vendor/flot/jquery.flot.fillbelow',
 
+    zrender:   '../vendor/zrender',
+    echarts:   '../vendor/echarts',
+    // echarts:   '../vendor/echarts-all',
+    // echarts:   'http://echarts.baidu.com/build/dist',
+    'echarts/bar':   '../vendor/echarts/chart/bar',
+    // 'echarts.map':   '../vendor/echarts/chart/map',
+
     modernizr:                '../vendor/modernizr-2.6.1',
 
     'bootstrap-tagsinput':    '../vendor/tagsinput/bootstrap-tagsinput',
@@ -78,6 +85,8 @@ require.config({
 
     // simple dependency declaration
     //
+    // 'echarts':              ['zrender'],
+    // 'echarts.map':          ['zrender', 'echarts'],
     'jquery.flot':          ['jquery'],
     'jquery.flot.pie':      ['jquery', 'jquery.flot'],
     'jquery.flot.events':   ['jquery', 'jquery.flot'],

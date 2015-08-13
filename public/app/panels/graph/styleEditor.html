@@ -1,9 +1,10 @@
 <div class="editor-row">
   <div class="section">
     <h5>Chart Options</h5>
-		<editor-opt-bool text="Bars" model="panel.bars" change="render()"></editor-opt-bool>
+		<editor-opt-bool text="Bars22" model="panel.bars" change="render()"></editor-opt-bool>
 		<editor-opt-bool text="Lines" model="panel.lines" change="render()"></editor-opt-bool>
 		<editor-opt-bool text="Points" model="panel.points" change="render()"></editor-opt-bool>
+		<editor-opt-bool text="Map" model="panel.map" change="render()"></editor-opt-bool>
   </div>
 
   <div class="section">
@@ -43,6 +44,10 @@
     <div class="editor-option">
       <label class="small">Graphite PNG <tip>server side</tip></label>
       <input type="radio" class="input-small" ng-model="panel.renderer" value="png" ng-change="get_data()" />
+    </div>
+    <div class="editor-option">
+      <label class="small">Echarts <tip>client side</tip></label>
+      <input type="radio" class="input-small" ng-model="panel.renderer" value="echarts" ng-change="get_data()" />
     </div>
   </div>
 
