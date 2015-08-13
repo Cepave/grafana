@@ -46,6 +46,9 @@ require.config({
     'jquery.flot.crosshair':   '../vendor/flot/jquery.flot.crosshair',
     'jquery.flot.fillbelow':   '../vendor/flot/jquery.flot.fillbelow',
 
+    'echarts':   '../vendor/echarts/echarts',
+    'echarts.map':   '../vendor/echarts/map',
+
     modernizr:                '../vendor/modernizr-2.6.1',
   },
 
