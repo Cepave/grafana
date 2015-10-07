@@ -2,6 +2,8 @@ package api
 
 import (
 	l "log"
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 
 	"net/url"
 
@@ -21,9 +23,76 @@ const (
 )
 
 /**
+ * @function name:	GetOpenFalconSessionUsername(sig string) string
+ * @description:	This function gets user logged in if "sig" cookie of Open-Falcon is valid.
+ * @related issues:	OWL-115, OWL-110
+ * @param:			sig string
+ * @return:			username string
+ * @author:			Don Hsieh
+ * @since:			10/07/2015
+ * @last modified: 	10/07/2015
+ * @called by:		func LoginWithOpenFalconCookie(c *middleware.Context) bool
+ *					 in pkg/api/login.go
+ */
+func GetOpenFalconSessionUsername(sig string) string {
+	// log.Info("sig = " + sig)
+	if sig == "" {
+		return ""
+	}
+
+	str := configOpenFalcon.Database.Account + ":" + configOpenFalcon.Database.Password
+	str += "@tcp(" + configOpenFalcon.Database.Addr + ")/graph?charset=utf8"
+	log.Info("str = " + str)
+	
+	db, err := sql.Open("mysql", str)
+	db.SetMaxOpenConns(2000)
+	db.SetMaxIdleConns(1000)
+	defer db.Close()
+
+	if err != nil {
+		return ""
+	}
+	
+	stmtOut, err := db.Prepare("SELECT id, uid, expired FROM uic.session WHERE sig = ?")
+	if err != nil {
+		l.Println(err.Error())
+		return ""
+	}
+	defer stmtOut.Close()
+
+	var id int64
+	var uid int64
+	var expired string
+	err = stmtOut.QueryRow(sig).Scan(&id, &uid, &expired) // WHERE id = endpointId
+	if err != nil {
+		l.Println(err.Error())
+		return ""
+	}
+	l.Println("Session ID =", id)
+	l.Println("Session user ID =", uid)
+	l.Println("Expired time stamp =", expired)
+
+	stmtOut, err = db.Prepare("SELECT name FROM uic.user WHERE id = ?")
+	if err != nil {
+		l.Println(err.Error())
+		return ""
+	}
+	defer stmtOut.Close()
+
+	var name string
+	err = stmtOut.QueryRow(uid).Scan(&name) // WHERE id = endpointId
+	if err != nil {
+		l.Println(err.Error())
+		return ""
+	}
+	l.Println("Session user name =", name)
+	return name
+}
+
+/**
  * @function name:	func LoginWithOpenFalconCookie(c *middleware.Context) bool
  * @description:	This function gets user logged in if "sig" cookie of Open-Falcon is valid.
- * @related issues:	OWL-110
+ * @related issues:	OWL-115, OWL-110
  * @param:			c *middleware.Context
  * @return:			bool
  * @author:			Don Hsieh
@@ -34,12 +103,23 @@ const (
  */
 func LoginWithOpenFalconCookie(c *middleware.Context) bool {
 	sig := c.GetCookie("sig")
-	log.Info("sig = " + sig)
-	// l.Println("sig =", sig)
-
-	// uname := "don"
-	uname := "admin"
+	uname := GetOpenFalconSessionUsername(sig)
+	if uname == "" {
+		return false
+	}
+	
 	userQuery := m.GetUserByLoginQuery{LoginOrEmail: uname}
+	l.Println("userQuery =", userQuery)
+	if err := bus.Dispatch(&userQuery); err == nil {
+		user := userQuery.Result
+		l.Println("user =", user)
+		loginUserWithUser(user, c)
+		return true
+	}
+
+	uname = "admin"
+	userQuery = m.GetUserByLoginQuery{LoginOrEmail: uname}
+	l.Println("userQuery =", userQuery)
 	if err := bus.Dispatch(&userQuery); err == nil {
 		user := userQuery.Result
 		l.Println("user =", user)
