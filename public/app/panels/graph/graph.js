@@ -454,9 +454,7 @@ function (angular, $, kbn, moment, _, ec, ecConfig, GraphTooltip) {
               obj = {};
               obj.name = name;
               obj.value = location.value;
-              // obj.selected = false;
               data.push(obj);
-              // geoCoord[name] = location.coord;
               values.push(location.value);
             });
 
@@ -471,7 +469,6 @@ function (angular, $, kbn, moment, _, ec, ecConfig, GraphTooltip) {
                 });
               }
             });
-            // console.log('function callPlot() top5 =', top5);
             var myChart = ec.init(document.getElementById(mapId));
             var seriesProvinces = {
                 tooltip: {
@@ -514,16 +511,6 @@ function (angular, $, kbn, moment, _, ec, ecConfig, GraphTooltip) {
                     // color: ["#bbbfc2"],
                     // splitNumber: 0
                 },
-                // toolbox: {
-                //     show : true,
-                //     orient: 'vertical',
-                //     x:'right',
-                //     y:'center',
-                //     feature : {
-                //         mark : {show: true},
-                //         dataView : {show: true, readOnly: false}
-                //     }
-                // },
                 series : [],
                 // animation: false
             };
@@ -932,7 +919,6 @@ function (angular, $, kbn, moment, _, ec, ecConfig, GraphTooltip) {
                 });
                 option.series[0].mapLocation.x = 'left';
                 option.series[0].mapLocation.width = '30%';
-                // console.log('function callPlot() option =', option);
                 myChart.setOption(option, true);
             });
             myChart.setOption(option, true);
@@ -956,7 +942,6 @@ function (angular, $, kbn, moment, _, ec, ecConfig, GraphTooltip) {
             var pieId = 'pieChart' + '_' + timestamp + rand.toString().substring(0, 5);
             elem.attr('id', pieId);
             var locations = sortedSeries[0].datapoints;
-            // console.log('function callPlot() PIE locations =', locations);
             locations = locations[0];
             var provinces = locations.provinces;
             var name = '';
@@ -1052,7 +1037,6 @@ function (angular, $, kbn, moment, _, ec, ecConfig, GraphTooltip) {
            * @function name:  function callPlot(incrementRenderCounter)
            * @description:    This function executes plot.
            * @related issues: OWL-062, OWL-063, OWL-052, OWL-030
-           * @related issues: OWL-063, OWL-052, OWL-030
            * @param:          integer incrementRenderCounter
            * @return:         void
            * @author:         Don Hsieh
