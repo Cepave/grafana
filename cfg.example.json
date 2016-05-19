@@ -1,6 +1,12 @@
 {
     "db": {
-        "addr": "root:@tcp(127.0.0.1:3306)/grafana?charset=utf8&loc=Asia%2FTaipei",
+        "host":  "127.0.0.1",
+        "port": 3306,
+        "protocol": "tcp",
+        "account": "root",
+        "password": "password",
+        "table": "grafana",
+        "options": "?charset=utf8&loc=Asia%2FTaipei",
         "idle": 10,
         "max": 100
     },

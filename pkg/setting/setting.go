@@ -141,10 +141,23 @@ type CommandLineArgs struct {
 	Args     []string
 }
 
+// type DatabaseConfig struct {
+// 	Addr    string  `json:"addr"`
+// 	Idle    int     `json:"idle"`
+// 	Max     int     `json:"max"`
+// }
+
 type DatabaseConfig struct {
-	Addr    string  `json:"addr"`
-	Idle    int     `json:"idle"`
-	Max     int     `json:"max"`
+	Addr    	string  `json:"addr"`
+	Host			string	`json:"host"`
+	Port			int			`json:"port"`
+	Protocol 	string	`json:"protocol"`
+	Account		string	`json:"account"`
+	Password	string	`json:"password"`
+	Table			string	`json:"table"`
+	Options 	string	`json:"options"`
+	Idle    	int     `json:"idle"`
+	Max     	int     `json:"max"`
 }
 
 type GlobalConfig struct {
@@ -181,6 +194,9 @@ func parseConfig() {
 
 	var configGlobal GlobalConfig
 	err = json.Unmarshal([]byte(configContent), &configGlobal)
+	db := configGlobal.Db
+	db.Addr = fmt.Sprintf("%s:%s@%s(%s:%d)/%s?%s", db.Account, db.Password, db.Protocol, db.Host, db.Port, db.Table, db.Options)
+	configGlobal.Db = db
 	if err != nil {
 		log.Fatal(4, "parse config file:", cfg, "fail:", err)
 		return
