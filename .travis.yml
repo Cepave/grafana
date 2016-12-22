@@ -1,0 +1,10 @@
+language: go
+
+go:
+  - 1.5
+
+script:
+  - go run build.go setup
+  - godep restore
+  - go get github.com/toolkits/file
+  - go build .
