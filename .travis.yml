@@ -1,9 +1,10 @@
 language: go
 
 go:
-  - 1.5
+  - 1.5.4
 
 script:
+  - export GOPATH=$HOME/gopath
   - go run build.go setup
   - godep restore
   - go get github.com/toolkits/file
