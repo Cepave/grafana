@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/Cepave/grafana.svg?branch=develop)](https://travis-ci.org/Cepave/grafana)
+================
+
 [Grafana](http://grafana.org) [![Circle CI](https://circleci.com/gh/grafana/grafana.svg?style=svg)](https://circleci.com/gh/grafana/grafana) [![Coverage Status](https://coveralls.io/repos/grafana/grafana/badge.png)](https://coveralls.io/r/grafana/grafana) [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/grafana/grafana?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 ================
 [Website](http://grafana.org) |
