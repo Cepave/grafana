@@ -20,15 +20,6 @@ const (
 
 
 func LoginView(c *middleware.Context) {
-	sig := c.GetCookie("sig")
-	if len(sig) > 0 {
-		c.Redirect(setting.AppSubUrl + "/")
-		return
-	} else {
-		c.Redirect(setting.ConfigOpenFalcon.Login)
-		return
-	}
-
 	if err := setIndexViewData(c); err != nil {
 		c.Handle(500, "Failed to get settings", err)
 		return
