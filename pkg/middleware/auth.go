@@ -248,9 +248,12 @@ func loginWithOpenFalconCookie(c *Context, username string) {
 	if err == nil {
 		user := userQuery.Result
 		loginUserWithUser(user, c)
-
 	} else {
-		username = "thirdPartyVisitor"
+		if username == "root" {
+			username = "admin"
+		} else {
+			username = "thirdPartyVisitor"
+		}
 		userQuery = m.GetUserByLoginQuery{LoginOrEmail: username}
 		err := bus.Dispatch(&userQuery)
 		if err == nil {
@@ -259,7 +262,6 @@ func loginWithOpenFalconCookie(c *Context, username string) {
 		} else {
 			log.Println("Error =", err.Error())
 		}
-
 	}
 }
 
