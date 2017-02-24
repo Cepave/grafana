@@ -173,12 +173,24 @@ func getThirdPartyUsername(cookieName string, token string) string {
 	}
 	username := ""
 	email := ""
+	cell := ""
+	realname := ""
+	wechat := ""
 	if data, ok := nodes["data"].(map[string]interface{}); ok {
 		if _, ok := data["username"]; ok {
 			username = data["username"].(string)
 		}
 		if _, ok := data["email"]; ok {
 			email = data["email"].(string)
+		}
+		if _, ok := data["cell"]; ok {
+			cell = data["cell"].(string)
+		}
+		if _, ok := data["realname"]; ok {
+			realname = data["realname"].(string)
+		}
+		if _, ok := data["wechat"]; ok {
+			wechat = data["wechat"].(string)
 		}
 	}
 	if username == "" {
@@ -195,7 +207,12 @@ func getThirdPartyUsername(cookieName string, token string) string {
 		user := rows[0]
 		username = user["name"].(string)
 	} else {
-		return ""
+		now := time.Now().Format("2006-01-02 15:04:05")
+		sql = "INSERT INTO uic.user(name, cnname, email, phone, qq, created) VALUES(?, ?, ?, ?, ?, ?)"
+		_, err := o.Raw(sql, username, realname, email, cell, wechat, now).Exec()
+		if err != nil {
+			return ""
+		}
 	}
 	return username
 }
@@ -232,7 +249,11 @@ func loginWithOpenFalconCookie(c *Context, username string) {
 		user := userQuery.Result
 		loginUserWithUser(user, c)
 	} else {
-		username = "admin"
+		if username == "root" {
+			username = "admin"
+		} else {
+			username = "thirdPartyVisitor"
+		}
 		userQuery = m.GetUserByLoginQuery{LoginOrEmail: username}
 		err := bus.Dispatch(&userQuery)
 		if err == nil {
@@ -246,37 +267,37 @@ func loginWithOpenFalconCookie(c *Context, username string) {
 
 func Auth(options *AuthOptions) macaron.Handler {
 	return func(c *Context) {
+		sig := c.GetCookie("sig")
 		cookieName := setting.ConfigOpenFalcon.LoginCookie
 		token := c.GetCookie(cookieName)
-		if len(token) > 0 {
-			username := getThirdPartyUsername(cookieName, token)
+		username := c.GetCookie(setting.CookieUserName)
+		if len(sig) == 0 && len(token) == 0 && len(username) == 0 && options.ReqSignedIn && !c.AllowAnonymous {
+			c.SetCookie(setting.CookieUserName, "", -1, setting.AppSubUrl+"/")
+			c.SetCookie(setting.CookieRememberName, "", -1, setting.AppSubUrl+"/")
+			c.Session.Destory(c)
+			c.Redirect(setting.ConfigOpenFalcon.Login)
+			return
+		}
+
+		if !c.IsSignedIn {
+			if len(username) == 0 {
+				if len(sig) > 0 {
+					username = getOpenFalconSessionUsername(sig)
+				} else if len(token) > 0 {
+					username = getThirdPartyUsername(cookieName, token)
+				}
+			}
 			loginWithOpenFalconCookie(c, username)
-		} else {
-			sig := c.GetCookie("sig")
-			if len(sig) == 0  && options.ReqSignedIn && !c.AllowAnonymous {
-				c.SetCookie(setting.CookieUserName, "", -1, setting.AppSubUrl+"/")
-				c.SetCookie(setting.CookieRememberName, "", -1, setting.AppSubUrl+"/")
-				c.Session.Destory(c)
-				url := setting.ConfigOpenFalcon.Login + c.Req.RequestURI
-				log.Println(url)
-				c.Redirect(url)
-				return
-			}
-			if !c.IsSignedIn {
-				username := getOpenFalconSessionUsername(sig)
-				loginWithOpenFalconCookie(c, username)
-			}
+		}
 
-			if !c.IsSignedIn && options.ReqSignedIn && !c.AllowAnonymous {
-				notAuthorized(c)
-				return
-			}
+		if !c.IsSignedIn && options.ReqSignedIn && !c.AllowAnonymous {
+			notAuthorized(c)
+			return
+		}
 
-			if !c.IsGrafanaAdmin && options.ReqGrafanaAdmin {
-				accessForbidden(c)
-				return
-			}
-
+		if !c.IsGrafanaAdmin && options.ReqGrafanaAdmin {
+			accessForbidden(c)
+			return
 		}
 	}
 }
