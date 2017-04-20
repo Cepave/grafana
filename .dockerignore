@@ -1,0 +1,6 @@
+.git
+.gitignore
+LiCENSE
+README.md
+docker/
+cfg.example.json
