@@ -32,7 +32,6 @@ build_image:
   only:
       - master
       - develop
-      - IN-106
   script:
     - docker image build
       --pull
