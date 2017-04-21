@@ -98,8 +98,10 @@ push_to_private_registry:
 remove_image:
   allow_failure: true
   script:
-    - docker image rm `docker image ls -a --filter label=owl=grafana --format '{{.Repository}}:{{.Tag}}'` || true
-    - docker image rm `docker image ls -a -q --filter 'dangling=true'` || true
+    - docker image rm
+      `docker image ls -a --filter label=owl=grafana --filter before=$LATEST_IMAGE --format '{{.Repository}}:{{.Tag}}'` || true
+    - docker image rm
+      `docker image ls -a -q --filter 'dangling=true'` || true
   stage: cleanup
   tags:
     - docker
