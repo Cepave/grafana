@@ -9,6 +9,7 @@ stages:
 
 variables:
   DOCKER_IMAGE: grafana
+  LABEL_OWL: grafana
 
 
 .docker_template: &docker_definition
@@ -39,7 +40,7 @@ build_image:
       --label git.commit=$CI_BUILD_REF
       --label git.branch=$CI_BUILD_REF_NAME
       --label git.url=$CI_PROJECT_URL.git
-      --label owl=grafana
+      --label owl=$LABEL_OWL
       -f docker/cepave/Dockerfile
       -t $IMAGE
       -t $LATEST_IMAGE
@@ -81,6 +82,7 @@ push_to_private_registry:
   <<: *docker_definition
   only:
     - master
+    - develop
     - triggers
   script:
     - docker login
@@ -98,8 +100,10 @@ push_to_private_registry:
 remove_image:
   allow_failure: true
   script:
-    - docker image rm `docker image ls -a --filter label=owl=grafana --format '{{.Repository}}:{{.Tag}}'` || true
-    - docker image rm `docker image ls -a -q --filter 'dangling=true'` || true
+    - docker image rm
+      `docker image ls -a --filter label=owl=$LABEL_OWL --filter before=$LATEST_IMAGE --format '{{.Repository}}:{{.Tag}}'` || true
+    - docker image rm
+      `docker image ls -a -q --filter 'dangling=true'` || true
   stage: cleanup
   tags:
     - docker
